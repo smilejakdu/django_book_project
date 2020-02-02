@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<!-----------  post contents display   ------->
+<div class="container">
+    <h1>메모장</h1>
+
+    <table class="table">
+        <thead>
+        <!--        border border-info mh-100-->
+        <div class="card-body">
+            <div class="rounded">
+                <h4><b>제목 :</b> {{ post.title }}</h4>
+                <h4><b>저자 :</b> {{ post.author }}</h4>
+                <h4><b>작성자 :</b> {{ post.writer }}</h4>
+            </div>
+            <div class="table-responsive rounded container ">
+                {{ post.content|linebreaksbr }}
+            </div>
+        </div>
+        </thead>
+    </table>
+    <!---------------------crud buttons -------------------------------->
+    <!------------ back to posts_list ------------>
+    <div>
+        <a href="{% url 'home' %}">
+            <input class="btn btn-info" type="button" value="목록">
+        </a>
+
+        <div class="r_buttons">
+
+            <!-- post_update -->
+            {% if post.writer == request.session.user %}
+            <a href="{% url 'update' post.pk %}">
+                <input class="btn btn-warning" type="button" value="수정하기">
+            </a>
+            {% endif %}
+
+            <!-- post_delete -->
+
+            {% if post.writer == request.session.user %}
+            <a href="{% url 'delete' post.pk %}">
+                <input class="btn btn-danger" type="button" value="삭제하기">
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 실제 댓글을 화면에 표시해 주는 부분입니다. -->
+{% for comment in comments %}
+<div class="breadcrumb container" style="position:relative;">
+    <div>
+        <b>{{ comment.writer }}</b> <!-- 작성자 표시 -->
+        <p>{{ comment.content }}</p> <!-- 댓글 내용 표시 -->
+        <p>{{ comment.date }}</p> <!-- 작성날짜 표시 -->
+    </div>
+    <!-- 작성한 사용자가 아니면 댓글 삭제 버튼이 보이지 않음. -->
+    <div style="position:absolute; bottom:0; right:0; margin:10px;">
+        {% if comment.writer == request.session.user %}
+<!--        <a href="{% url 'comment_update' pk=comment.pk %}" class="btn btn-warning">수정</a>-->
+        <a href="{% url 'comment_delete' pk=comment.pk %}" class="btn btn-danger">삭제</a>
+        {% endif %}
+    </div>
+</div>
+
+{% empty %}
+<p style="text-align:center; padding:15px;">댓글 없습니다..</p>
+{% endfor %}
+
+<!-- 댓글 작성히는 부분-->
+<!-- form을 이용해서 django view에 데이터를 전송하는 경우 아래와 같은 템플릿 문법으로 view와 연결된 url를 지정 가능하다.-->
+<div class="container">
+    <form action="{% url 'comment_create' pk=post.pk %}" method="POST">
+        {% csrf_token %}  <!-- XSS 공격 방지를 위해 랜덤 토큰을 추가한다. -->
+        {{ comment_form }} <!-- 댓글 폼 생성 -->
+        <input type="submit" value="작성!" class="btn btn-info"
+               style="float:right; margin-top:-4.5em; margin-right:1em;">
+    </form>
+</div>
+{% endblock content %}

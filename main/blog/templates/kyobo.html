@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div style="margin:20px; text-align:center;">
+    <h1>교보문고 베스트셀러</h1>
+</div>
+<div class="table-responsive container" style="width:1000px; text-align:center;">
+    {% for item in kyobo_list %}
+    <table class="table">
+        <thead class="table-info">
+        <tr>
+            <th width="25%">이미지</th>
+            <th width="25%">제목</th>
+            <th width="25%">저자</th>
+            <th width="25%">가격</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <img src="{{item.image}}" alt="" width="110" height="150">
+            </td>
+            <td>
+                <a href="https://search.kyobobook.co.kr/web/search?vPstrKeyWord={{ item.title }}&orderClick=LAG">
+                    {{ item.title}}
+                </a>
+            </td>
+            <td>
+                {{ item.author }}
+            </td>
+            <td>
+                {{ item.original_price }}원
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {% endfor %}
+</div>
+{% endblock content %}

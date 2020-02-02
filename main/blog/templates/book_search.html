@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div style="margin:20px; text-align:center;">
+    <h1>책 검색</h1>
+</div>
+
+<div class="table-responsive container" style="width:1000px;">
+    <form action="{% url 'book_search' %}" method="GET">
+        <input class="search_bar" type="text" name="input_search" placeholder="검색">
+<!--        <input class="btn btn-outline-secondary" type="submit" value="검색">-->
+    </form>
+</div>
+
+<div class="table-responsive container" style="width:1000px; text-align:center;">
+    {% for item in items %}
+    <table class="table">
+        <thead class="table-info">
+        <tr>
+            <th width="30%">이미지</th>
+            <th width="30%">제목</th>
+            <th width="30%">저자</th>
+            <th width="30%">가격</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <img src="{{item.image}}" alt="" width="110" height="150">
+            </td>
+            <td>
+                <a href="https://search.kyobobook.co.kr/web/search?vPstrKeyWord={{ item.title |striptags }}&orderClick=LAG">
+                    {{ item.title|safe }}
+                </a>
+            </td>
+            <td>
+                {{ item.author }}
+            </td>
+            <td>
+                {% load humanize %}
+                {{ item.price | intcomma }}원
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {% endfor %}
+</div>
+{% endblock content %}

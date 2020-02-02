@@ -1,0 +1,130 @@
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Django_book</title>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- fontawesome -->
+    <!-- 부트스트랩에서 아이콘을 쓰려면 fontawesome 라이브러리를 쓰면 됩니다. -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+    <!-- google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+
+    <style>
+
+* {font-family: 'Roboto', sans-serif;}
+
+.container {
+    margin: 2rem auto;
+}
+
+h1 {
+    padding: 2rem 0;
+    display: inline;
+}
+
+.r_buttons {
+    display:inline-block;
+    float: right;
+}
+
+.l_buttons {
+    clear: both;
+    float: left;
+}
+
+.table {
+    margin: 1rem 0;
+}
+
+.p_content {
+    padding: 2rem;
+}
+
+label {
+    display: block;
+}
+
+#id_title {
+  cols:40;
+}
+
+textarea {
+  cols=40, rows=40;
+}
+
+button, #c_buttons {
+  margin: 2rem 0;
+}
+
+a:hover {
+  text-decoration:none
+}
+
+#s_buttons {
+  float: right;
+}
+.search_bar {
+   border:1px solid black;
+   border-radius: 10px;
+   padding: 8px;
+   margin: 10px;
+}
+
+a:hover {
+    color:#86cfda;
+}
+
+.comment_box {
+    border:1px solid gray;
+    border-radius:10px;
+ }
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+<!-- navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-info">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav mr-auto">
+            <a class="nav-item nav-link active" href="{% url 'logout' %}">로그아웃</a>
+            <a class="nav-item nav-link active" href="{% url 'home' %}">글목록</a>
+            <a class="nav-item nav-link active" href="{% url 'kyobo' %}">베스트셀러</a>
+            <a class="nav-item nav-link active" href="{% url 'book_search' %}">책검색</a>
+        </div>
+        <b style="color:white;">{{ email }}</b>님
+    </div>
+</nav>
+
+{% block content %}
+{% endblock %}
+
+<!-- bootstrap -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>

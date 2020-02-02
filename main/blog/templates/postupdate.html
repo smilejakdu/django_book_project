@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <h4 style="margin-left:20px; text-align:center">메모</h4>
+    <hr/>
+    <div style="text-align:center;">
+        <form method="post" class="post-form" action="">
+            {% csrf_token %}
+            {{form.title}}
+            {{form.author}}
+                <div style="width:100%;">
+                    {{form.content}}
+                </div>
+            <input type="submit" class="btn btn-info" value="등록하기" style="float:right;">
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
+

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container table-responsive">
+    <h1>메모장</h1>
+    <!------------------ display search ------------------------>
+    <div style="width:200px; margin-top:10px; margin-bottom:10px;">
+        <form action="{% url 'home' %}" method="GET" autocomplete="off">
+            <input class="form-control" type="text" name="search" value="{{search_data.title}}" placeholder="검색">
+        </form>
+    </div>
+    <!------------------ display posts list------------------------>
+
+    <table class="table">
+        <thead class="table-info">
+        <tr>
+            <th scope="col" width="15%">번호</th>
+            <th scope="col">작성자</th>
+            <th scope="col">제목</th>
+            <th scope="col" width="25%">저자</th>
+            <th scope="col">작성날짜</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for post in posts %}
+        <tr>
+            <td>{{ forloop.counter}}</td>
+            <th>{{ post.writer }}</th>
+            <td>
+                <a href="{% url 'detail' post.pk %}">
+                    {{ post.title|truncatechars:20 }}
+                </a>
+            </td>
+            <td>{{ post.author }}</td>
+            <td>{{ post.date }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="http://localhost:8000/blog/create/" class="btn btn-info"
+       style="margin-top:10px; margin-bottom:10px; float:right;">
+        작성
+    </a>
+
+    {% if posts.has_other_pages %}
+    <ul class="pagination container" style="justify-content: center;">
+        <!-- 제일 처음으로 가기 -->
+        {% if posts.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1"> << </a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link"> << </span></li>
+        {% endif %}
+        <!-- 이전페이지 -->
+        {% if posts.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}"><</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link"> < </span></li>
+        {% endif %}
+
+        <!-- 페이징 숫자 -->
+        {% for i in posts.paginator.page_range %}
+            {% if posts.number == i %}
+                <li class="page-item active"><span class="page-link">{{ i }} <span
+                        class="sr-only">(current)</span></span></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        <!-- 다음페이지 -->
+        {% if posts.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}"> > </a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link"> > </span></li>
+        {% endif %}
+
+        <!-- 끝 페이지 -->
+        {% if posts.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ posts.paginator.num_pages  }}"> >> </a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link"> >> </span></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+    </span>
+    {% endblock content %}
+</div>
