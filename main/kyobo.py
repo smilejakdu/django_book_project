@@ -5,7 +5,7 @@ import pymysql
 # 첨언 : 사실 urllib 같은 것 보다는 request라는 라이브러리를 이용해서 HTTP Request를 요청하는게 좋습니다..(훨씬 편함)
 
 
-conn = pymysql.connect(host='localhost', user='root', password='root', db='django_book', charset='utf8')
+conn = pymysql.connect(host='localhost', user='root', password='##tkakrnl12', db='django_book', charset='utf8')
 myCursor = conn.cursor()
 sql = "truncate table book"
 myCursor.execute(sql)
