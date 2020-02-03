@@ -126,12 +126,12 @@ def comment_update(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     post = get_object_or_404(Post, pk=pk)
 
-    # 댓글 작성자가 아닌경우, 댓글 삭제를 불가능하게 함.
-    # 댓글 테이블에 저장된 작성자와 현재 세션의 작성자를 비교하는 방식으로 구현하였습니다.
+    # 댓글 작성자가 아닌경우, 댓글 수정을 불가능하게 함.
+    # 댓글 테이블에 저장된 작성자와 현재 세션의 작성자를 비교하는 방식으로 구현
     if request.session['user'] is not None and comment.writer != request.session['user']:
         redirect('detail')
 
-    # 실제 수정로직
+    # 실제 수정로직정
     if request.method == 'POST':
         form = CommentForm(request.POST, instance=post)
         if form.is_valid():
@@ -153,7 +153,7 @@ def comment_delete(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
     # 댓글 작성자가 아닌경우, 댓글 삭제를 불가능하게 함. 
-    # 댓글 테이블에 저장된 작성자와 현재 세션의 작성자를 비교하는 방식으로 구현하였습니다.
+    # 댓글 테이블에 저장된 작성자와 현재 세션의 작성자를 비교하는 방식으로 구현
     if request.session['user'] is not None and comment.writer == request.session['user']:
         comment.delete()
 
