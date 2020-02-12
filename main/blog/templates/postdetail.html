@@ -1,23 +1,43 @@
 {% extends "base.html" %}
-
 {% load static %}
-
 {% block content %}
 
 <!-----------  post contents display   ------->
 <script>
 
-        function comment_model(no,content) {
-        alert(no);
-        alert(content);
+    function commentModel(id , data) {
         $('#exampleModal').modal('show');
-        $('#comment_text').val($('#comment_update'+content).val());
-        $('#comment_no').val(no);
+        $('#comment_text').val(data);
+        $('#comment_no').val(id);
+
     }
 
 
+    function commentUpdate() {
+        const id = $('#comment_text').val();
+        const comment = $('#comment_no').val();
+        console.log(id);
+        console.log(comment);
 
+        $.ajax({
+            url: "{% url 'comment_update'  comment.pk %}",
+            type: 'post',
+            dataType: 'text',
+            data: {'id': id, 'comment': comment},
 
+            success: function (data) {
+                if (data.code == '200') {
+                    alert('정상적으로 수정되었습니다.');
+                    location.reload();
+                } else {
+                    alert('정상적으로 처리되지 못했습니다.');
+                }
+            },
+            error: function (err) {
+                alert('정상적으로 처리되지 못했습니다. 관리자에게 문의해주세요.');
+            }
+        });
+    }
 
 
 </script>
@@ -35,10 +55,11 @@
             </div>
             <div class="modal-body">
                 <input type="text" class="form-control" id="comment_text">
+                <input type="hidden" id="comment_no" value="">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" onclick="comment_update();">수정</button>
+                <button type="button" class="btn btn-primary" onclick="commentUpdate()">수정</button>
             </div>
         </div>
     </div>
@@ -104,7 +125,7 @@
         {% if comment.writer == request.session.user %}
 
         <a class="btn btn-warning"
-           onclick="comment_model( {{comment.id}} , {{comment.content}} )">수정</a>
+           onclick="commentModel( {{comment.id}} ,'{{comment.content}}' )">수정</a>
 
         <a href="{% url 'comment_delete' pk=comment.pk %}" class="btn btn-danger">삭제</a>
         {% endif %}

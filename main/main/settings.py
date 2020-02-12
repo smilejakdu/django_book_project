@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',  # 콤마찍기 위한
-    'blog.apps.BlogConfig', # 생성한 django app 등록
+    'blog.apps.BlogConfig',  # 생성한 django app 등록
     'user.apps.UserConfig',
 ]
 
@@ -64,7 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'blog.context_processors.get_username', #여기에 정의한 context_processor 를 넣어주면 됨
+                'blog.context_processors.get_username',  # 여기에 정의한 context_processor 를 넣어주면 됨
             ],
         },
     },
@@ -84,7 +84,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
-            'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"' # 아래와 같은 옵션을 줘야 각 모델의 table명을 동적으로 지정가능하다
+            'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'  # 아래와 같은 옵션을 줘야 각 모델의 table명을 동적으로 지정가능하다
         }
     }
 }
@@ -131,4 +131,4 @@ STATICFILES_DIRS = [
 
 # 기본 login url 지정(이 옵션은 django auth 라이브러리 에서 사용됨)
 LOGIN_URL = '/user/login'
-LOGIN_REDIRECT_URL='/user/login'
+LOGIN_REDIRECT_URL = '/user/login'

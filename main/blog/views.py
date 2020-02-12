@@ -9,10 +9,12 @@ import urllib.request
 
 
 # 해당 함수는, 포스트 목록을 보여주는 함수이고, 페이징 기능으로 한 페이지당 5개씩 보여준다.
+# commit 테스트 중이다
+
 @login_required
 def home(request):
+    test = ''
     posts = Post.objects.all()  # 모든 Border 테이블의 모든 object들을 br에 저장하라
-    email = request.session.get('user')
 
     # 검색 부분
     search = request.GET.get('search', '')  # GET request의 인자중에 b 값이 있으면 가져오고, 없으면 빈 문자열 넣기
@@ -125,13 +127,12 @@ def comment_create(request, pk):
 def comment_update(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     post = get_object_or_404(Post, pk=pk)
-
-    # 댓글 작성자가 아닌경우, 댓글 수정을 불가능하게 함.
-    # 댓글 테이블에 저장된 작성자와 현재 세션의 작성자를 비교하는 방식으로 구현
+    # 댓글 작성자가 아닌경우, 댓글 삭제를 불가능하게 함.
+    # 댓글 테이블에 저장된 작성자와 현재 세션의 작성자를 비교하는 방식으로 구현하였습니다.
     if request.session['user'] is not None and comment.writer != request.session['user']:
         redirect('detail')
 
-    # 실제 수정로직정
+    # 실제 수정로직
     if request.method == 'POST':
         form = CommentForm(request.POST, instance=post)
         if form.is_valid():
@@ -143,7 +144,6 @@ def comment_update(request, pk):
             return redirect('detail', pk=comment.post.pk)
     else:
         form = CommentForm()
-
     return redirect('detail')
 
 
@@ -191,11 +191,11 @@ def book_search(request):
             # if context is None:
             #     context = "검색을 해주세요"
 
-            return render(request, 'book_search.html', {'items': items, 'email': email})
+            return render(request, 'book_search.html', {'items': items})
 
 
 def kyobo(request):
     kyobo_book = Book.objects.all()
-    email = request.session.get('user')
+    # email = request.session.get('user')
 
-    return render(request, 'kyobo.html', {'kyobo_list': kyobo_book, 'email': email})
+    return render(request, 'kyobo.html', {'kyobo_list': kyobo_book})
