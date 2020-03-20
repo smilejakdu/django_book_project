@@ -2,69 +2,6 @@
 {% load static %}
 {% block content %}
 
-<!-----------  post contents display   ------->
-<script>
-
-    function commentModel(id , data) {
-        $('#exampleModal').modal('show');
-        $('#comment_text').val(data);
-        $('#comment_no').val(id);
-
-    }
-
-
-    function commentUpdate() {
-        const id = $('#comment_text').val();
-        const comment = $('#comment_no').val();
-        console.log(id);
-        console.log(comment);
-
-        $.ajax({
-            url: "{% url 'comment_update'  comment.pk %}",
-            type: 'post',
-            dataType: 'text',
-            data: {'id': id, 'comment': comment},
-
-            success: function (data) {
-                if (data.code == '200') {
-                    alert('정상적으로 수정되었습니다.');
-                    location.reload();
-                } else {
-                    alert('정상적으로 처리되지 못했습니다.');
-                }
-            },
-            error: function (err) {
-                alert('정상적으로 처리되지 못했습니다. 관리자에게 문의해주세요.');
-            }
-        });
-    }
-
-
-</script>
-
-<!-- 댓글 수정용 모달 시작 -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">댓글 수정하기</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type="text" class="form-control" id="comment_text">
-                <input type="hidden" id="comment_no" value="">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" onclick="commentUpdate()">수정</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- 댓글 수정용 모달 끝 -->
 
 
 <div class="container">
@@ -117,15 +54,11 @@
 <div class="breadcrumb container" style="position:relative;">
     <div>
         <h5>{{ comment.writer }}</h5> <!-- 작성자 표시 -->
-        <p id="comment_update">{{ comment.content }}</p> <!-- 댓글 내용 표시 -->
         <p>{{ comment.date }}</p> <!-- 작성날짜 표시 -->
     </div>
     <!-- 작성한 사용자가 아니면 댓글 삭제 버튼이 보이지 않음. -->
     <div style="position:absolute; bottom:0; right:0; margin:10px;">
         {% if comment.writer == request.session.user %}
-
-        <a class="btn btn-warning"
-           onclick="commentModel( {{comment.id}} ,'{{comment.content}}' )">수정</a>
 
         <a href="{% url 'comment_delete' pk=comment.pk %}" class="btn btn-danger">삭제</a>
         {% endif %}

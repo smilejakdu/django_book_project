@@ -1,21 +1,22 @@
+import json
+import urllib.request
+
 from django.shortcuts import render, get_object_or_404, redirect
 from user.decorators import login_required
 from .models import Post, Book, Comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import PostForm, CommentForm
 from datetime import *
-import json
-import urllib.request
+
+from django.views import View
+from django.http import HttpResponse, JsonResponse
 
 
 # 해당 함수는, 포스트 목록을 보여주는 함수이고, 페이징 기능으로 한 페이지당 5개씩 보여준다.
-# commit 테스트 중이다
 
 @login_required
 def home(request):
-    test = ''
     posts = Post.objects.all()  # 모든 Border 테이블의 모든 object들을 br에 저장하라
-
     # 검색 부분
     search = request.GET.get('search', '')  # GET request의 인자중에 b 값이 있으면 가져오고, 없으면 빈 문자열 넣기
     if search:  # search 에 값이 들어있으면 true
@@ -123,30 +124,6 @@ def comment_create(request, pk):
     return redirect('detail')
 
 
-@login_required
-def comment_update(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    post = get_object_or_404(Post, pk=pk)
-    # 댓글 작성자가 아닌경우, 댓글 삭제를 불가능하게 함.
-    # 댓글 테이블에 저장된 작성자와 현재 세션의 작성자를 비교하는 방식으로 구현하였습니다.
-    if request.session['user'] is not None and comment.writer != request.session['user']:
-        redirect('detail')
-
-    # 실제 수정로직
-    if request.method == 'POST':
-        form = CommentForm(request.POST, instance=post)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.writer = request.session['user']
-            comment.post = post
-            comment.date = datetime.today()  # DateTime 필드에 날짜를 저장할때는 아래와 같이 파이썬 내장 모듈인 datatime을 사용해서 날짜지정이 가능하다.
-            comment.save()
-            return redirect('detail', pk=comment.post.pk)
-    else:
-        form = CommentForm()
-    return redirect('detail')
-
-
 # 댓글 삭제 페이지
 @login_required
 def comment_delete(request, pk):
@@ -161,8 +138,6 @@ def comment_delete(request, pk):
 
 
 def book_search(request):
-    email = request.session.get('user')
-
     if request.method == 'GET':
 
         client_id = "UHsRE0R9LGspRWna4F2I"
@@ -184,18 +159,23 @@ def book_search(request):
             items = result.get('items')
             print(result)  # request를 예쁘게 출력해볼 수 있다.
 
-            # context = {
-            #     'items': items
-            # }
-            #
-            # if context is None:
-            #     context = "검색을 해주세요"
-
             return render(request, 'book_search.html', {'items': items})
 
 
 def kyobo(request):
     kyobo_book = Book.objects.all()
-    # email = request.session.get('user')
 
     return render(request, 'kyobo.html', {'kyobo_list': kyobo_book})
+
+
+class KyoboApiView(View):
+    def get(self, request):
+        try:
+            kyobo_data = Book.objects.values()
+            print(kyobo_data)
+            return JsonResponse({'message': list(kyobo_data)}, status=200)
+
+        except Book.DoesNotExist:
+            return JsonResponse({'message': 'Not found'}, status=400)
+        except TypeError:
+            return JsonResponse({'message': 'error'}, status=400)

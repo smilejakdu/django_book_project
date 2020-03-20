@@ -11,7 +11,7 @@ sql = "truncate table book"
 myCursor.execute(sql)
 # 교보문고의 베스트셀러 웹페이지를 가져옵니다.
 html = urlopen('http://www.kyobobook.co.kr/bestSellerNew/bestseller.laf')
-bs_obj = BeautifulSoup(html, "html.parser")
+bs_obj = BeautifulSoup(html, "lxml")
 
 # 책의 상세 웹페이지 주소를 추출하여 리스트에 저장합니다.
 book_page_urls = []
