@@ -1,16 +1,17 @@
 import json
 import urllib.request
 
-from django.shortcuts      import render,       get_object_or_404, redirect
+from django.shortcuts      import render, get_object_or_404, redirect
 from user.decorators       import login_required
-from .models               import Post, Book,Comment, Covid
-from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-from .forms                import PostForm,CommentForm
+from .models               import Post, Book, Comment, Covid
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from .forms                import PostForm, CommentForm
 from datetime              import *
+from django.db.models      import Count, Q
 
 from django.views          import View
 from django.http           import HttpResponse, JsonResponse
-from main.my_settings import CLIENT_ID,CLIENT_SECRET
+from main.my_settings      import CLIENT_ID, CLIENT_SECRET
 
 
 @login_required
@@ -193,3 +194,23 @@ class CovidApiView(View):
 
         except TypeError:
             return JsonResponse({'message': 'error'}, status=400)
+
+
+class SearchView(View):
+    def get(self, request):
+        query = request.GET.get('keyword', None)
+        # query = '중국' test
+        if query:
+            area_data = Covid.objects.filter(Q(area__icontains=query) | Q(country__icontains=query)).all()
+            data = {
+                'data': [{
+                    'id': search.id,
+                    'area': search.area,
+                    'country': search.country,
+                    'patient': search.patient,
+                    'dead': search.dead,
+                } for search in area_data]
+            }
+            return JsonResponse({'message': data}, status=200)
+
+        return JsonResponse({"error": "invalid keyword"}, status=400)
