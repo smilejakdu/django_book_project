@@ -1,17 +1,16 @@
 from urllib.request import urlopen
-from bs4 import BeautifulSoup
+from bs4            import BeautifulSoup
 import pymysql
-
-# 첨언 : 사실 urllib 같은 것 보다는 request라는 라이브러리를 이용해서 HTTP Request를 요청하는게 좋습니다..(훨씬 편함)
 
 
 conn = pymysql.connect(host='localhost', user='root', password='##tkakrnl12', db='django_book', charset='utf8')
 myCursor = conn.cursor()
 sql = "truncate table book"
 myCursor.execute(sql)
+
 # 교보문고의 베스트셀러 웹페이지를 가져옵니다.
 html = urlopen('http://www.kyobobook.co.kr/bestSellerNew/bestseller.laf')
-bs_obj = BeautifulSoup(html, "lxml")
+bs_obj = BeautifulSoup(html, "html.parser")
 
 # 책의 상세 웹페이지 주소를 추출하여 리스트에 저장합니다.
 book_page_urls = []
@@ -31,6 +30,7 @@ for index, book_page_url in enumerate(book_page_urls):
     original_price = format(int(original_price), ',')
     sale_price = bsObject.find('meta', {'property': 'rb:salePrice'}).get('content')
     print(title, author, image, url, original_price, sale_price)
+
     myCursor.execute(
         'INSERT INTO book(title,'
         'author,'

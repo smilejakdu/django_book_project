@@ -1,18 +1,16 @@
 import json
 import urllib.request
 
-from django.shortcuts import render, get_object_or_404, redirect
-from user.decorators import login_required
-from .models import Post, Book, Comment
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .forms import PostForm, CommentForm
-from datetime import *
+from django.shortcuts      import render,get_object_or_404, redirect
+from user.decorators       import login_required
+from .models               import Post, Book,Comment
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+from .forms                import PostForm,CommentForm
+from datetime              import *
 
-from django.views import View
-from django.http import HttpResponse, JsonResponse
+from django.views          import View
+from django.http           import HttpResponse, JsonResponse
 
-
-# 해당 함수는, 포스트 목록을 보여주는 함수이고, 페이징 기능으로 한 페이지당 5개씩 보여준다.
 
 @login_required
 def home(request):
@@ -53,9 +51,9 @@ def post_create(request):
             post.date = datetime.today()  # DateTime 필드에 날짜를 저장할때는 아래와 같이 파이썬 내장 모듈인 datatime을 사용해서 날짜지정이 가능하다.
             post.save()
             return redirect('home')
-    else:
-        # POST 요청이 아닌 경우 단순히 Form 태그만 리턴한다.
-        form = PostForm()
+
+    # POST 요청이 아닌 경우 단순히 Form 태그만 리턴한다.
+    form = PostForm()
 
     return render(request, 'postcreate.html', {'form': form})
 
@@ -86,12 +84,12 @@ def post_update(request, pk):
         if form.is_valid():
             form.save()
             return redirect('home')
-    else:
-        form = PostForm(instance=post)
+
+    form = PostForm(instance=post)
+
     return render(request, 'postupdate.html', {'form': form})
 
 
-# 포스트를 삭제하는 페이지
 @login_required
 def post_delete(request, pk):
     post = Post.objects.get(pk=pk)
@@ -100,10 +98,10 @@ def post_delete(request, pk):
     # 게시글 테이블에 저장된 작성자와 현재 세션의 작성자를 비교하는 방식으로 구현하였습니다.
     if request.session['user'] is not None and post.writer == request.session['user']:
         post.delete()
+
     return redirect('home')
 
 
-# 댓글 작성 페이지
 @login_required
 def comment_create(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -119,12 +117,12 @@ def comment_create(request, pk):
             comment.date = datetime.today()  # DateTime 필드에 날짜를 저장할때는 아래와 같이 파이썬 내장 모듈인 datatime을 사용해서 날짜지정이 가능하다.
             comment.save()
             return redirect('detail', pk=comment.post.pk)
-    else:
-        form = CommentForm()
+
+    form = CommentForm()
+
     return redirect('detail')
 
 
-# 댓글 삭제 페이지
 @login_required
 def comment_delete(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
@@ -153,11 +151,11 @@ def book_search(request):
         book_api_request.add_header("X-Naver-Client-Secret", client_secret)
         response = urllib.request.urlopen(book_api_request)
         rescode = response.getcode()
+
         if (rescode == 200):
             response_body = response.read()
             result = json.loads(response_body.decode('utf-8'))
             items = result.get('items')
-            print(result)  # request를 예쁘게 출력해볼 수 있다.
 
             return render(request, 'book_search.html', {'items': items})
 
@@ -170,12 +168,18 @@ def kyobo(request):
 
 class KyoboApiView(View):
     def get(self, request):
+
         try:
             kyobo_data = Book.objects.values()
-            print(kyobo_data)
             return JsonResponse({'message': list(kyobo_data)}, status=200)
 
         except Book.DoesNotExist:
             return JsonResponse({'message': 'Not found'}, status=400)
+
         except TypeError:
             return JsonResponse({'message': 'error'}, status=400)
+
+class CovidApiView(View):
+    def get(self , request):
+        return 
+

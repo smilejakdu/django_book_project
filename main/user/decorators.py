@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-from .models import User
+from .models          import User
 
 
 # login_required 데코레이터를 직접 작성해주었네요..
@@ -9,6 +9,7 @@ def login_required(function):
         user = request.session.get('user')
         if user is None or not user:
             return redirect('/user/login')
+
         return function(request, *args, **kwargs)
 
     return wrap
