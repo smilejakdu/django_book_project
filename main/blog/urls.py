@@ -1,16 +1,18 @@
 from django.contrib import admin
 from django.urls    import path
 
-from .views import (home,
-                    post_create,
-                    post_detail,
-                    post_update,
-                    post_delete,
-                    comment_create,
-                    comment_delete,
-                    book_search,
-                    kyobo,
-                    KyoboApiView)
+from .views         import (home,
+                            post_create,
+                            post_detail,
+                            post_update,
+                            post_delete,
+                            comment_create,
+                            comment_delete,
+                            book_search,
+                            kyobo,
+                            KyoboApiView,
+                            CovidApiView,
+                            )
 
 urlpatterns = [
     path('admin/'                   , admin.site.urls),
@@ -23,5 +25,6 @@ urlpatterns = [
     path('comment/<int:pk>/delete/' , comment_delete, name='comment_delete'),  # 댓글 삭제 부분 URL 라우팅
     path('book_search/'             , book_search, name='book_search'),
     path('kyobo/'                   , kyobo, name='kyobo'),
-    path('book_api/'                , KyoboApiView.as_view(), name='book_api')
+    path('book_api/'                , KyoboApiView.as_view(), name='book_api'),
+    path('covid_api/'               , CovidApiView.as_view(), name= 'covid_api')
 ]

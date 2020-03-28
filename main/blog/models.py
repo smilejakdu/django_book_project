@@ -7,8 +7,6 @@ class Post(models.Model):
     date       = models.DateField(blank=True, null=True)
     content    = models.TextField(blank=True, null=True)
     writer     = models.TextField(max_length=255, blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     # Meta 클래스를 재정의해서 옵션 설정가능.
     class Meta:
@@ -53,4 +51,11 @@ class Book(models.Model):
         db_table  = 'book'
 
 class Covid(models.Model):
-    
+    area    = models.CharField(max_length=100 ,    blank=True , null=True)
+    country = models.CharField(max_length=200 ,    blank=True , null=True)
+    patient = models.IntegerField(max_length=500 , blank=True , null=True)
+    dead    = models.IntegerField(max_length=500 , blank=True , null=True)
+
+    class Meta:
+        db_table = 'covids'
+

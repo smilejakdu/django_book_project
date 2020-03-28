@@ -1,15 +1,16 @@
 import json
 import urllib.request
 
-from django.shortcuts      import render,get_object_or_404, redirect
+from django.shortcuts      import render,       get_object_or_404, redirect
 from user.decorators       import login_required
-from .models               import Post, Book,Comment
+from .models               import Post, Book,Comment, Covid
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from .forms                import PostForm,CommentForm
 from datetime              import *
 
 from django.views          import View
 from django.http           import HttpResponse, JsonResponse
+from main.my_settings import CLIENT_ID,CLIENT_SECRET
 
 
 @login_required
@@ -138,8 +139,8 @@ def comment_delete(request, pk):
 def book_search(request):
     if request.method == 'GET':
 
-        client_id = "UHsRE0R9LGspRWna4F2I"
-        client_secret = "_x06AWGdFZ"
+        client_id = CLIENT_ID
+        client_secret = CLIENT_SECRET
         input_data = request.GET.get('input_search')
         encText = urllib.parse.quote("{}".format(input_data))
         if input_data is None:
@@ -179,7 +180,16 @@ class KyoboApiView(View):
         except TypeError:
             return JsonResponse({'message': 'error'}, status=400)
 
-class CovidApiView(View):
-    def get(self , request):
-        return 
 
+class CovidApiView(View):
+    def get(self, request):
+
+        try:
+            covid_data = Covid.objects.values()
+            return JsonResponse({'message': list(covid_data)}, status=200)
+
+        except Covid.DoesNotExist:
+            return JsonResponse({'message': 'Not found'}, status=400)
+
+        except TypeError:
+            return JsonResponse({'message': 'error'}, status=400)
