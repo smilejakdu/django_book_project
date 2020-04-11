@@ -3,7 +3,7 @@ import urllib.request
 
 from django.shortcuts      import render, get_object_or_404, redirect
 from user.decorators       import login_required
-from .models               import Post, Book, Comment, Covid
+from .models               import Post, Book, Comment, Covid , KoreaCovid
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms                import PostForm, CommentForm
 from datetime              import *
@@ -172,8 +172,14 @@ class KyoboApiView(View):
     def get(self, request):
 
         try:
-            kyobo_data = Book.objects.values()
-            return JsonResponse({'message': list(kyobo_data)}, status=200)
+            kyobo = Book.objects.values()
+            kyobo_count = Book.objects.count()
+
+            return JsonResponse(
+                                {'data' : {
+                                    'book_count' : kyobo_count,
+                                    'books'      : list(kyobo)
+                                }}, status=200)
 
         except Book.DoesNotExist:
             return JsonResponse({'message': 'Not found'}, status=400)
@@ -184,10 +190,16 @@ class KyoboApiView(View):
 
 class CovidApiView(View):
     def get(self, request):
-
         try:
-            covid_data = Covid.objects.values()
-            return JsonResponse({'message': list(covid_data)}, status=200)
+            country_covid = Covid.objects.values()
+            korea_covid_count = KoreaCovid.objects.all().aggregate(sum('patient'))
+            korea_covid = KoreaCovid.objects.values()
+            return JsonResponse(
+                                {'data' : {
+                                    'korea_covid_count' : korea_covid_count,
+                                    'korea_covid'       : list(korea_covid),
+                                    'country_covid'     : list(country_covid),
+                                }}, status=200)
 
         except Covid.DoesNotExist:
             return JsonResponse({'message': 'Not found'}, status=400)
@@ -204,11 +216,11 @@ class SearchView(View):
             area_data = Covid.objects.filter(Q(area__icontains=query) | Q(country__icontains=query)).all()
             data = {
                 'data': [{
-                    'id': search.id,
-                    'area': search.area,
-                    'country': search.country,
-                    'patient': search.patient,
-                    'dead': search.dead,
+                    'id'      : search.id,
+                    'area'    : search.area,
+                    'country' : search.country,
+                    'patient' : search.patient,
+                    'dead'    : search.dead,
                 } for search in area_data]
             }
             return JsonResponse({'message': data}, status=200)

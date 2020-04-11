@@ -59,3 +59,10 @@ class Covid(models.Model):
     class Meta:
         db_table = 'covids'
 
+class KoreaCovid(models.Model):
+    area     = models.CharField(max_length=100, blank=True , null=True)
+    patient  = models.CharField(max_length=250, blank=True , null=True)
+    increase = models.CharField(max_length=250, blank=True , null=True)
+
+    class Meta:
+        db_table = "korea_covids"
