@@ -7,7 +7,7 @@ from .models               import Post, Book, Comment, Covid , KoreaCovid
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms                import PostForm, CommentForm
 from datetime              import *
-from django.db.models      import Count, Q
+from django.db.models      import Count, Q , Sum
 
 from django.views          import View
 from django.http           import HttpResponse, JsonResponse
@@ -172,14 +172,25 @@ class KyoboApiView(View):
     def get(self, request):
 
         try:
-            kyobo = Book.objects.values()
+            keyword = request.GET.get('keyword', None)
+            if keyword:
+                book_data    = Book.objects.filter(Q(author__icontains=keyword)).all().values()
+                search_count = book_data.count()
+
+                return JsonResponse(
+                    {'data' : {
+                        'book_count' : search_count,
+                        'books'      : list(book_data)
+                    }}, status=200)
+
+            kyobo       = Book.objects.values()
             kyobo_count = Book.objects.count()
 
             return JsonResponse(
-                                {'data' : {
-                                    'book_count' : kyobo_count,
-                                    'books'      : list(kyobo)
-                                }}, status=200)
+                {'data' : {
+                    'book_count' : kyobo_count,
+                    'books'      : list(kyobo)
+                }}, status=200)
 
         except Book.DoesNotExist:
             return JsonResponse({'message': 'Not found'}, status=400)
@@ -187,13 +198,13 @@ class KyoboApiView(View):
         except TypeError:
             return JsonResponse({'message': 'error'}, status=400)
 
-
 class CovidApiView(View):
     def get(self, request):
         try:
-            country_covid = Covid.objects.values()
-            korea_covid_count = KoreaCovid.objects.all().aggregate(sum('patient'))
-            korea_covid = KoreaCovid.objects.values()
+            country_covid     = Covid.objects.values()
+            korea_covid       = KoreaCovid.objects.values()
+            korea_covid_count = KoreaCovid.objects.all().aggregate(Sum('patient'))
+
             return JsonResponse(
                                 {'data' : {
                                     'korea_covid_count' : korea_covid_count,
