@@ -1,6 +1,4 @@
-from django.contrib import admin
 from django.urls    import path
-
 from .views         import (home,
                             post_create,
                             post_detail,
@@ -12,12 +10,11 @@ from .views         import (home,
                             kyobo,
                             KyoboApiView,
                             CovidApiView,
-                            MemoView ,
-                            MemoDetailView,
+                            BoardView,
+                            BoardDetailView
                             )
 
 urlpatterns = [
-    path('admin/'                   , admin.site.urls),
     path(''                         , home, name='home'),
     path('create/'                  , post_create, name='create'),
     path('<int:pk>/'                , post_detail, name='detail'),
@@ -29,6 +26,6 @@ urlpatterns = [
     path('kyobo/'                   , kyobo, name='kyobo'),
     path('book_api/'                , KyoboApiView.as_view(), name='book_api'),
     path('covid_api/'               , CovidApiView.as_view(), name= 'covid_api'),
-    path('memo/<int:pk>'            , MemoView.as_view()),
-    path('memo/<int:pk>/update/'    , MemoDetailView.as_view()),
+    path('board'                    , BoardView.as_view()),
+    path('board/<int:memo_id>'      , BoardDetailView.as_view()),
 ]

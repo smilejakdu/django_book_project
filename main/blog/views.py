@@ -238,12 +238,11 @@ class CovidApiView(View):
         except TypeError:
             return JsonResponse({'message': 'error'}, status=400)
 
-class MemoView(View):
+class BoardView(View):
     def post(self , request):
         data    = json.loads(request.body)
         title   = data.get('title' , None)
         content = data.get('content' , None)
-        print(title)
         try:
             if title and content:
                 Memo(
@@ -257,15 +256,17 @@ class MemoView(View):
             return HttpResponse(status=400)
 
     def get(self , request):
-        memo = Memo.objects.all()
+        memo = Memo.objects.values()
         return JsonResponse({"data":list(memo)} , status=200)
 
 
-class MemoDetailView(View):
+class BoardDetailView(View):
     def post(self , request , memo_id):
         data      = json.loads(request.body)
         title     = data.get('title'   , None)
         content   = data.get('content' , None)
+        print(data)
+        print(title , content , memo_id)
         memo_data = Memo.objects.get(id = memo_id)
 
         try :
@@ -280,8 +281,9 @@ class MemoDetailView(View):
             return JsonResponse({"message" : "error"} , status=400)
 
     def delete(self , request , memo_id):
+        print(memo_id)
         memo_data = Memo.objects.get(id = memo_id)
-
+        print(memo_data)
         try :
             if memo_data.id:
                 memo_data.delete()
