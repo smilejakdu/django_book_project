@@ -12,7 +12,8 @@ from .views         import (home,
                             kyobo,
                             KyoboApiView,
                             CovidApiView,
-                            SearchView,
+                            MemoView ,
+                            MemoDetailView,
                             )
 
 urlpatterns = [
@@ -28,5 +29,6 @@ urlpatterns = [
     path('kyobo/'                   , kyobo, name='kyobo'),
     path('book_api/'                , KyoboApiView.as_view(), name='book_api'),
     path('covid_api/'               , CovidApiView.as_view(), name= 'covid_api'),
-    path('covid_search/'            , SearchView.as_view(), name='covid_search'),
+    path('memo/<int:pk>'            , MemoView.as_view()),
+    path('memo/<int:pk>/update/'    , MemoDetailView.as_view()),
 ]

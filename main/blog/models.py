@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class Post(models.Model):
     title      = models.CharField(max_length=100, blank=True, null=True)
     author     = models.CharField(max_length=10, blank=True, null=True)
@@ -34,7 +33,7 @@ class Comment(models.Model):
     class Meta:
         app_label = 'blog'  # 이런식으로, 해당 모델이 속한 앱을 명시해주어야 한다.
         db_table = 'comment'
-        # managed = False # Managed 플래그는, 모델이 갱신되도, Database 테이블은 갱신이 안되게하는 옵션임. 유의바랍니다.
+        # managed = False # Managed 플래그는, 모델이 갱신되도, Database 테이블은 갱신이 안되게하는 옵션임. 
 
 
 class Book(models.Model):
@@ -66,3 +65,11 @@ class KoreaCovid(models.Model):
 
     class Meta:
         db_table = "korea_covids"
+
+class Memo(models.Model):
+    title   = models.CharField(max_length=200 , blank=True , null = True)
+    content = models.CharField(max_length=500 , blank=True , null = True)
+
+    class Meta:
+        db_table = "memos"
+

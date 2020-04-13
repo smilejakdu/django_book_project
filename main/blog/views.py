@@ -3,7 +3,7 @@ import urllib.request
 
 from django.shortcuts      import render, get_object_or_404, redirect
 from user.decorators       import login_required
-from .models               import Post, Book, Comment, Covid , KoreaCovid
+from .models               import Post, Book, Comment, Covid , KoreaCovid , Memo
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms                import PostForm, CommentForm
 from datetime              import *
@@ -140,27 +140,22 @@ def comment_delete(request, pk):
 def book_search(request):
     if request.method == 'GET':
 
-        client_id = CLIENT_ID
-        client_secret = CLIENT_SECRET
-        input_data = request.GET.get('input_search')
-        encText = urllib.parse.quote("{}".format(input_data))
+        input_data    = request.GET.get('input_search',None)
+        encText       = urllib.parse.quote("{}".format(input_data))
         if input_data is None:
             # print('데이터가없습니다.')
             encText = urllib.parse.quote("Django")
         url = "https://openapi.naver.com/v1/search/book?query=" + encText  # json 결과
         book_api_request = urllib.request.Request(url)
-        book_api_request.add_header("X-Naver-Client-Id", client_id)
-        book_api_request.add_header("X-Naver-Client-Secret", client_secret)
+        book_api_request.add_header("X-Naver-Client-Id"     , CLIENT_ID)
+        book_api_request.add_header("X-Naver-Client-Secret" , CLIENT_SECRET)
         response = urllib.request.urlopen(book_api_request)
-        rescode = response.getcode()
-
-        if (rescode == 200):
+        if (response.getcode() == 200):
             response_body = response.read()
-            result = json.loads(response_body.decode('utf-8'))
-            items = result.get('items')
+            items         = json.loads(response_body
+                                       .decode('utf-8')).get('items')
 
             return render(request, 'book_search.html', {'items': items})
-
 
 def kyobo(request):
     kyobo_book = Book.objects.all()
@@ -201,12 +196,37 @@ class KyoboApiView(View):
 class CovidApiView(View):
     def get(self, request):
         try:
+            query = request.GET.get('keyword',None) # 코로나 데이터 검색 
+            if query:
+                world_data           = Covid.objects.filter(Q(area__icontains=query) | Q(country__icontains=query)).all()
+                korea_data          = KoreaCovid.objects.filter(Q(area__icontains=query)).all()
+                world_patient_count = world_data.count()
+                korea_patient_count = korea_data.count()
+
+                data = {
+                    'korea_count' : korea_patient_count,
+                    'world_count' : world_patient_count,
+                    'world_data'  : [{
+                            'id'      : world.id,
+                            'area'    : world.area,
+                            'country' : world.country,
+                            'patient' : world.patient,
+                            'dead'    : world.dead,
+                    } for world in world_data],
+                    'korea_data' : [{
+                            'id'      : korea.id,
+                            'area'    : korea.area,
+                            'patient' : korea.patient,
+                    } for korea in korea_data],
+                }
+
+                return JsonResponse({"data" :data},status=200)
+
             country_covid     = Covid.objects.values()
             korea_covid       = KoreaCovid.objects.values()
             korea_covid_count = KoreaCovid.objects.all().aggregate(Sum('patient'))
 
-            return JsonResponse(
-                                {'data' : {
+            return JsonResponse({'data' : {
                                     'korea_covid_count' : korea_covid_count,
                                     'korea_covid'       : list(korea_covid),
                                     'country_covid'     : list(country_covid),
@@ -218,22 +238,54 @@ class CovidApiView(View):
         except TypeError:
             return JsonResponse({'message': 'error'}, status=400)
 
+class MemoView(View):
+    def post(self , request):
+        data    = json.loads(request.body)
+        title   = data.get('title' , None)
+        content = data.get('content' , None)
+        print(title)
+        try:
+            if title and content:
+                Memo(
+                    title   = title,
+                    content = content
+                ).save()
 
-class SearchView(View):
-    def get(self, request):
-        query = request.GET.get('keyword', None)
-        # query = '중국' test
-        if query:
-            area_data = Covid.objects.filter(Q(area__icontains=query) | Q(country__icontains=query)).all()
-            data = {
-                'data': [{
-                    'id'      : search.id,
-                    'area'    : search.area,
-                    'country' : search.country,
-                    'patient' : search.patient,
-                    'dead'    : search.dead,
-                } for search in area_data]
-            }
-            return JsonResponse({'message': data}, status=200)
+                return HttpResponse(status=200)
 
-        return JsonResponse({"error": "invalid keyword"}, status=400)
+        except :
+            return HttpResponse(status=400)
+
+    def get(self , request):
+        memo = Memo.objects.all()
+        return JsonResponse({"data":list(memo)} , status=200)
+
+
+class MemoDetailView(View):
+    def post(self , request , memo_id):
+        data      = json.loads(request.body)
+        title     = data.get('title'   , None)
+        content   = data.get('content' , None)
+        memo_data = Memo.objects.get(id = memo_id)
+
+        try :
+            if title and content:
+                memo_data.title   = title
+                memo_data.content = content
+                memo_data.save()
+
+                return HttpResponse(status=200)
+
+        except :
+            return JsonResponse({"message" : "error"} , status=400)
+
+    def delete(self , request , memo_id):
+        memo_data = Memo.objects.get(id = memo_id)
+
+        try :
+            if memo_data.id:
+                memo_data.delete()
+                return HttpResponse(status=200)
+
+        except :
+            return HttpResponse(status=400)
