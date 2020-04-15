@@ -3,7 +3,7 @@ import urllib.request
 
 from django.shortcuts      import render, get_object_or_404, redirect
 from user.decorators       import login_required
-from .models               import Post, Book, Comment, Covid , KoreaCovid , Memo , Scheduler , Favorite
+from .models               import Post, Book, Comment, Covid , KoreaCovid , Memo , Scheduler
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms                import PostForm, CommentForm
 from datetime              import *
