@@ -80,3 +80,4 @@ class Scheduler(models.Model):
 
     class Meta:
         db_table ='schedulers'
+
