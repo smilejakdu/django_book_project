@@ -3,7 +3,7 @@ import urllib.request
 
 from django.shortcuts      import render, get_object_or_404, redirect
 from user.decorators       import login_required
-from .models               import Post, Book, Comment, Covid , KoreaCovid , Memo
+from .models               import Post, Book, Comment, Covid , KoreaCovid , Memo , Scheduler
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms                import PostForm, CommentForm
 from datetime              import *
@@ -265,8 +265,6 @@ class BoardDetailView(View):
         data      = json.loads(request.body)
         title     = data.get('title'   , None)
         content   = data.get('content' , None)
-        print(data)
-        print(title , content , memo_id)
         memo_data = Memo.objects.get(id = memo_id)
 
         try :
@@ -281,13 +279,69 @@ class BoardDetailView(View):
             return JsonResponse({"message" : "error"} , status=400)
 
     def delete(self , request , memo_id):
-        print(memo_id)
         memo_data = Memo.objects.get(id = memo_id)
-        print(memo_data)
         try :
             if memo_data.id:
                 memo_data.delete()
                 return HttpResponse(status=200)
 
         except :
+            return HttpResponse(status=400)
+
+class SchedulerViewApi(View):
+    def post(self , request):
+        try:
+            data       = json.loads(request.body)
+            start_date = data.get('start_date' , None)
+            end_date   = data.get('end_date'   , None)
+            text       = data.get('text'       , None)
+
+            if start_date and end_date and text:
+                Scheduler(
+                    start_date = start_date,
+                    end_date   = end_date,
+                    text       = text,
+                ).save()
+
+            return HttpResponse(status=200)
+
+        except TypeError:
+            return JsonResponse({"ERROR": "TYPE_ERROR"}, status=400)
+
+    def get(self , request):
+        scheduler = Scheduler.objects.values()
+        return JsonResponse({"data" : list(scheduler)} , status=200)
+
+class SchedulerViewDetailApi(View):
+    def post(self , request ,scheduler_id):
+        try :
+            data          = json.loads(request.body)
+            start_date    = data.get('start_date' , None)
+            end_date      = data.get('end_date'   , None)
+            text          = data.get('text'       , None)
+            schedule_data = Scheduler.objects.get(id=scheduler_id)
+
+            if start_date and end_date and text:
+                schedule_data.start_date = start_date
+                schedule_data.end_date   = end_date
+                schedule_data.text       = text
+                schedule_data.save()
+
+                return HttpResponse(status=200)
+
+        except TypeError:
+            return JsonResponse({"MESSAGE" : "TYPE_ERROR"} , status=400)
+
+        except :
+            return HttpResponse(status=400)
+
+    def delete(self , request ,scheduler_id):
+        schedule_data = Scheduler.objects.get(id = scheduler_id)
+        print("schedule_data : " , schedule_data)
+        try :
+            if schedule_data.id:
+                schedule_data.delete()
+                return HttpResponse(status=200)
+
+        except Scheduler.DoesNotExist:
             return HttpResponse(status=400)

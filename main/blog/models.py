@@ -73,3 +73,10 @@ class Memo(models.Model):
     class Meta:
         db_table = "memos"
 
+class Scheduler(models.Model):
+    start_date = models.DateTimeField(max_length=250)
+    end_date   = models.DateTimeField(max_length=250)
+    text       = models.CharField(max_length=250 , blank=False)
+
+    class Meta:
+        db_table ='schedulers'
