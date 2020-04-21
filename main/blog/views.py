@@ -2,17 +2,22 @@ import json
 import urllib.request
 
 from django.shortcuts      import render, get_object_or_404, redirect
-from user.decorators       import login_required
-from .models               import Post, Book, Comment, Covid , KoreaCovid , Memo , Scheduler
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .forms                import PostForm, CommentForm
-from datetime              import *
 from django.db.models      import Count, Q , Sum
-
 from django.views          import View
 from django.http           import HttpResponse, JsonResponse
-from main.my_settings      import CLIENT_ID, CLIENT_SECRET
 
+from datetime              import *
+from main.my_settings      import CLIENT_ID, CLIENT_SECRET
+from user.decorators       import login_required
+from .forms                import PostForm, CommentForm
+from .models               import (Post,
+                                   Book,
+                                   Comment,
+                                   Covid,
+                                   KoreaCovid,
+                                   Memo,
+                                   Scheduler)
 
 @login_required
 def home(request):
@@ -91,7 +96,6 @@ def post_update(request, pk):
 
     return render(request, 'postupdate.html', {'form': form})
 
-
 @login_required
 def post_delete(request, pk):
     post = Post.objects.get(pk=pk)
@@ -102,7 +106,6 @@ def post_delete(request, pk):
         post.delete()
 
     return redirect('home')
-
 
 @login_required
 def comment_create(request, pk):
@@ -121,7 +124,6 @@ def comment_create(request, pk):
             return redirect('detail', pk=comment.post.pk)
 
     form = CommentForm()
-
     return redirect('detail')
 
 
@@ -252,8 +254,11 @@ class BoardView(View):
 
                 return HttpResponse(status=200)
 
-        except :
+        except TypeError:
             return HttpResponse(status=400)
+
+        except Except as  e:
+            return JsonResponse({"ERROR" : e},status=400)
 
     def get(self , request):
         memo = Memo.objects.values()
@@ -276,7 +281,7 @@ class BoardDetailView(View):
                 return HttpResponse(status=200)
 
         except :
-            return JsonResponse({"message" : "error"} , status=400)
+            return JsonResponse({"MESSAGE" : "ERROR"} , status=400)
 
     def delete(self , request , memo_id):
         memo_data = Memo.objects.get(id = memo_id)
@@ -285,8 +290,12 @@ class BoardDetailView(View):
                 memo_data.delete()
                 return HttpResponse(status=200)
 
-        except :
+        except ValueError:
             return HttpResponse(status=400)
+
+        except Exception as e :
+            return JsonResponse({"ERROR":e},status=400)
+
 
 class SchedulerViewApi(View):
     def post(self , request):
@@ -307,6 +316,9 @@ class SchedulerViewApi(View):
 
         except TypeError:
             return JsonResponse({"ERROR": "TYPE_ERROR"}, status=400)
+
+        except Exception as e :
+            return JsonResponse({"ERROR":e},status=400)
 
     def get(self , request):
         scheduler = Scheduler.objects.values()
@@ -332,12 +344,11 @@ class SchedulerViewDetailApi(View):
         except TypeError:
             return JsonResponse({"MESSAGE" : "TYPE_ERROR"} , status=400)
 
-        except :
-            return HttpResponse(status=400)
+        except Exception as e:
+            return JsonResponse({"ERROR":e},status=400)
 
     def delete(self , request ,scheduler_id):
         schedule_data = Scheduler.objects.get(id = scheduler_id)
-        print("schedule_data : " , schedule_data)
         try :
             if schedule_data.id:
                 schedule_data.delete()
