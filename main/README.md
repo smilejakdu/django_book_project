@@ -5,6 +5,7 @@ naver 검색 api 사용하기
 코로나 api
 책 api 
 게시판 crud
+
 프로젝트 인원 : 1명 
 - html , css (bootstrap), jquery , django 
  
