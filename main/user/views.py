@@ -6,8 +6,8 @@ from .models                     import User
 
 class RegisterView(FormView):
     template_name = 'register.html'
-    form_class = RegisterForm
-    success_url = '/user/login'
+    form_class    = RegisterForm
+    success_url   = '/user/login'
 
     def form_valid(self, form):
         user = User(
@@ -20,8 +20,8 @@ class RegisterView(FormView):
 
 class LoginView(FormView):
     template_name = 'login.html'
-    form_class = LoginForm
-    success_url = '../../blog/'
+    form_class    = LoginForm
+    success_url   = '../../blog/'
 
     def form_valid(self, form):
         self.request.session['user'] = form.data.get('email')

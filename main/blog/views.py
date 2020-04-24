@@ -257,7 +257,7 @@ class BoardView(View):
         except TypeError:
             return HttpResponse(status=400)
 
-        except Except as  e:
+        except Exception as  e:
             return JsonResponse({"ERROR" : e},status=400)
 
     def get(self , request):

@@ -27,7 +27,7 @@ urlpatterns = [
     path('book_search/'                 , book_search, name='book_search'),
     path('kyobo/'                       , kyobo, name='kyobo'),
     path('book_api/'                    , KyoboApiView.as_view(), name='book_api'),
-    path('covid_api/'                   , CovidApiView.as_view(), name= 'covid_api'),
+    path('covid_api/'                   , CovidApiView.as_view(), name='covid_api'),
     path('board'                        , BoardView.as_view()),
     path('board/<int:memo_id>'          , BoardDetailView.as_view()),
     path('scheduler'                    , SchedulerViewApi.as_view()),

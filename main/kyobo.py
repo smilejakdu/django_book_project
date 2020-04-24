@@ -20,15 +20,15 @@ for cover in bs_obj.find_all('div', {'class': 'detail'}):
 
 # 메타 정보로부터 필요한 정보를 추출합니다.메타 정보에 없는 저자 정보만 따로 가져왔습니다.
 for index, book_page_url in enumerate(book_page_urls):
-    html = urlopen(book_page_url)
-    bsObject = BeautifulSoup(html, "html.parser")
-    title = bsObject.find('meta', {'property': 'rb:itemName'}).get('content')
-    author = bsObject.select('span.name a')[0].text
-    image = bsObject.find('meta', {'property': 'rb:itemImage'}).get('content')
-    url = bsObject.find('meta', {'property': 'rb:itemUrl'}).get('content')
+    html           = urlopen(book_page_url)
+    bsObject       = BeautifulSoup(html, "html.parser")
+    title          = bsObject.find('meta', {'property': 'rb:itemName'}).get('content')
+    author         = bsObject.select('span.name a')[0].text
+    image          = bsObject.find('meta', {'property': 'rb:itemImage'}).get('content')
+    url            = bsObject.find('meta', {'property': 'rb:itemUrl'}).get('content')
     original_price = bsObject.find('meta', {'property': 'rb:originalPrice'}).get('content')
     original_price = format(int(original_price), ',')
-    sale_price = bsObject.find('meta', {'property': 'rb:salePrice'}).get('content')
+    sale_price     = bsObject.find('meta', {'property': 'rb:salePrice'}).get('content')
     print(title, author, image, url, original_price, sale_price)
 
     myCursor.execute(
