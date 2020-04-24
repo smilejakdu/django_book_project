@@ -12,4 +12,5 @@ naver 검색 api 사용하기
 
 
 
-스크린샷 2020-04-24 오후 3.27.58.png
+https://github.com/smilejakdu/django_book_project/blob/master/main/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202020-04-24%20%EC%98%A4%ED%9B%84%203.27.58.png
+
